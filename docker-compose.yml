@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # O Banco de Dados de Tempo Real para a IA
+  redis:
+    image: redis:7-alpine
+    container_name: aiops-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # Coletor de Métricas
+  prometheus:
+    image: prom/prometheus
+    container_name: aiops-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: always
+
+  # Visualizador de Traces (Observabilidade)
+  jaeger:
+    image: jaegertracing/all-in-one:1.41
+    container_name: aiops-jaeger
+    ports:
+      - "16686:16686" # Interface Web
+      - "14268:14268" # Coleta de Traces
+    restart: always
+
+  # Dashboards (Opcional - Adicionei para fechar o ciclo!)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: aiops-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus

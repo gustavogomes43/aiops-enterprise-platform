@@ -1,7 +1,7 @@
 boto3==1.26.0
 fastapi==0.95.0
 uvicorn==0.21.0
-prometheus_client==0.16.0
+prometheus_client
 opentelemetry-api==1.17.0
 opentelemetry-sdk==1.17.0
 pandas==2.0.0
