@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiops-api
+  labels:
+    app: aiops-platform
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aiops-platform
+  template:
+    metadata:
+      labels:
+        app: aiops-platform
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: aiops-container
+        # Substitua pelo URL do seu ECR que o Terraform gerou
+        image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/aiops-platform:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: REDIS_HOST
+          value: "aiops-cache.xxxxxx.0001.use1.cache.amazonaws.com"
+        - name: DB_HOST
+          value: "aiops-db.xxxxxx.us-east-1.rds.amazonaws.com"
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aiops-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: aiops-platform
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
