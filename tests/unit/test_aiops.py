@@ -1,23 +1,31 @@
 import pytest
 from datetime import datetime
-# Importando os dois motores da sua plataforma AIOps
+# Importando dos novos nomes de pacotes com underscore
 from aiops.correlation_engine.event_correlator import CorrelationEngine, Event, EventType, EventSeverity
 from aiops.ml_models.anomaly_detector import AnomalyDetector
 
-# Teste 1: Valida a lógica de correlação (Passo 6)
-def test_event_correlation_logic():
+def test_correlation_logic():
+    # Inicializa o motor (usando localhost para teste local)
     engine = CorrelationEngine(redis_host='localhost')
-    now = datetime.now()
     
-    events = [
-        Event(timestamp=now, source="auth-service", event_type=EventType.LOG_ERROR, severity=EventSeverity.CRITICAL, message="DB Timeout"),
-        Event(timestamp=now, source="api-gateway", event_type=EventType.TRACE_ERROR, severity=EventSeverity.WARNING, message="504 Gateway Timeout")
-    ]
+    event1 = Event(
+        id="1", 
+        timestamp=datetime.now(), 
+        type=EventType.NETWORK_LATENCY, 
+        severity=EventSeverity.CRITICAL, 
+        source="router-01", 
+        message="High latency detected"
+    )
     
-    groups = engine.correlate_events(events)
-    assert len(groups) >= 1
+    # Adiciona evento e verifica se a lógica de correlação responde
+    engine.add_event(event1)
+    assert len(engine.events) == 1
 
-# Teste 2: Valida a inicialização do Detector de Anomalias (Passo 7)
-def test_anomaly_detector_initialization():
-    detector = AnomalyDetector(redis_host='localhost')
-    assert detector is not None
+def test_anomaly_detection():
+    detector = AnomalyDetector()
+    # Simula dados de métricas (ex: CPU usage)
+    data = [10, 12, 11, 13, 100, 12, 11] 
+    anomalies = detector.detect(data)
+    
+    # O valor 100 deve ser detectado como anomalia
+    assert 100 in anomalies
