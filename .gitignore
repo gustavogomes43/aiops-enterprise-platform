@@ -1,0 +1,32 @@
+# Python: ficheiros compilados e ambientes virtuais
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+.venv
+env/
+
+# Terraform: ficheiros de estado e binários (MUITO IMPORTANTE)
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform.lock.hcl
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs e ficheiros temporários do sistema
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# Pacotes e Distribuição
+dist/
+build/
+*.egg-info/
